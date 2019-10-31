@@ -10,6 +10,9 @@ static void ResultMessage(LPCTSTR lpszbuf);
 static void ErrorMessage(WORD wBsn);
 static BOOL CTD_InitAxis(WORD wBsn, WORD wAxis);
 
+/* 自分の */
+BOOL changeSpeed(WORD wBsn, WORD wAxis, DOUBLE SS, DOUBLE Object, DOUBLE Rate);
+
 int main(void)
 {
 	TCHAR szBuf[1024];
@@ -59,7 +62,6 @@ int main(void)
 			 _T("制御軸 %d を初期化しました"),
 			 wAxis);
 	ResultMessage(szBuf);
-
 
 	///* メカニカルシグナルを表示 */
 	//while (!kbhit())
@@ -211,4 +213,10 @@ static void ErrorMessage(WORD wBsn)
 			 dwRes);
 
 	MessageBox(NULL, szbuf, szTitle, MB_OK | MB_ICONSTOP);
+}
+
+/* 自分の */
+BOOL changeSpeed(WORD wBsn, WORD wAxis, DOUBLE SS, DOUBLE Object, DOUBLE Rate)
+{
+	return true;
 }
