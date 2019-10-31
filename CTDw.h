@@ -1,19 +1,19 @@
-/*****************************************************************************
+Ôªø/*****************************************************************************
  * ctdw.h
  *
- * PCPG168NIêßå‰
+ * PCPG168NIÂà∂Âæ°
  * Copyright CocmoTechs Co.,Ltd.
  *
  * Date 4.2005
  *****************************************************************************/
 #include "CTD.h"
 
-#define CTD_DLL_NAME		"CTD20.dll"			// DLL ñº
-#define CTD_ERR_WRAPDLL		((DWORD)-1)		    // ÉâÉbÉpÅ[ä÷êîì‡ÉGÉâÅ[
+#define CTD_DLL_NAME		"CTD20.dll"			// DLL Âêç
+#define CTD_ERR_WRAPDLL		((DWORD)-1)		    // „É©„ÉÉ„Éë„ÉºÈñ¢Êï∞ÂÜÖ„Ç®„É©„Éº
 
 extern HINSTANCE hDLL;
 
-//USPG28 USPG48 USPG48Hópä÷êîíËã`
+//USPG28 USPG48 USPG48HÁî®Èñ¢Êï∞ÂÆöÁæ©
 BOOL	APIENTRY CTDwDllOpen( void );
 BOOL	APIENTRY CTDwDllClose( void );
 BOOL	APIENTRY CTDwGetLibVersion( PBYTE pbLibVer);
@@ -73,7 +73,7 @@ BOOL	APIENTRY CTDwGetAxisStatus( WORD wBsn, PBYTE pbData );
 BOOL	APIENTRY CTDwGetAxisAllPort( WORD wBsn, WORD wAxis, PDWORD pdwData );
 BOOL	APIENTRY CTDwDeviceStatus( WORD wBsn, PBYTE pbStatus);
 
-//APIä÷êî
+//APIÈñ¢Êï∞
 int		APIENTRY CTDwSetControl( WORD wBsn, WORD wAxis, BYTE bControl );
 int		APIENTRY CTDwGetControl( WORD wBsn, WORD wAxis, PBYTE pbControl );
 

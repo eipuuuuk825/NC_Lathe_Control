@@ -1,3 +1,12 @@
-﻿  cl : コマンド ライン warning D9035 : オプション 'Gm' の使用は現在推奨されていません。今後のバージョンからは削除されます。
-  CTDs.c
-  CTDs.vcxproj -> G:\５年授業関係\卒業研究\ソフト\VS2010 C\.\Debug\CTDs.exe
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(452,5): warning MSB8028: The intermediate directory (.\Debug\) contains files shared from another project (MechanicalSignal_test.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  cl : コマンド ライン warning D9035 : オプション 'Gm' の使用は現在推奨されていません。今後のバージョンからは削除されます。
+  Main.cpp
+C:\Users\mitsui\Desktop\卒業研究\ソフト\NC_Lathe_Control\Main.cpp(18,7): warning C4101:  'b': ローカル変数は 1 度も使われていません。
+C:\Users\mitsui\Desktop\卒業研究\ソフト\NC_Lathe_Control\Main.cpp(16,7): warning C4101:  'bData': ローカル変数は 1 度も使われていません。
+  CTDw.cpp
+C:\Users\mitsui\Desktop\卒業研究\ソフト\NC_Lathe_Control\Main.cpp(19,8): warning C4101:  'dwCount': ローカル変数は 1 度も使われていません。
+C:\Users\mitsui\Desktop\卒業研究\ソフト\NC_Lathe_Control\CTDw.cpp(2297,31): warning C4473:  'sprintf_s': 書式文字列として渡された引数が不足しています
+C:\Users\mitsui\Desktop\卒業研究\ソフト\NC_Lathe_Control\CTDw.cpp(2297,31): message :  プレースホルダーとそのパラメーターには 4 の可変個引数が必要ですが、3 が指定されています。
+  コードを生成中...
+C:\Users\mitsui\Desktop\卒業研究\ソフト\NC_Lathe_Control\CTDw.cpp(2297,31): message :  不足している可変個引数 4 が書式文字列 '%d' に必要です
+  CTDs.vcxproj -> C:\Users\mitsui\Desktop\卒業研究\ソフト\NC_Lathe_Control\.\Debug\CTDs.exe
