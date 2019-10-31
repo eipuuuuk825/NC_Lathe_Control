@@ -1,0 +1,3 @@
+﻿  cl : コマンド ライン warning D9035 : オプション 'Gm' の使用は現在推奨されていません。今後のバージョンからは削除されます。
+  CTDs.c
+  CTDs.vcxproj -> G:\５年授業関係\卒業研究\ソフト\VS2010 C\.\Debug\CTDs.exe
