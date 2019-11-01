@@ -11,7 +11,8 @@ static void ErrorMessage(WORD wBsn);
 static BOOL CTD_InitAxis(WORD wBsn, WORD wAxis);
 
 /* 自分の */
-BOOL changeSpeed(WORD wBsn, WORD wAxis, DOUBLE SS, DOUBLE Object, DOUBLE Rate);
+BOOL changeSpeed(WORD wBsn, WORD wAxis, DOUBLE ss, DOUBLE object, DOUBLE rate);
+BOOL getBusy(WORD wBsn, WORD wAxis);
 
 int main(void)
 {
@@ -63,16 +64,8 @@ int main(void)
 			 wAxis);
 	ResultMessage(szBuf);
 
-	///* メカニカルシグナルを表示 */
-	//while (!kbhit())
-	//{
-	//	if (FALSE == CTDwGetMechanicalSignal(wBsn, wAxis, &b))
-	//	{
-	//		ErrorMessage(wBsn);
-	//		return 1;
-	//	}
-	//	printf("-SLM %d, -ELM %d\n", (b >> 3) & 1, (b >> 1) & 1);
-	//}
+	/* 速度を変更 */
+	changeSpeed(wBsn, wAxis, 100, 10000, 10000);
 
 	//---------------------------------------------------------------
 	// リミットスイッチが押されるまで駆動
@@ -215,8 +208,36 @@ static void ErrorMessage(WORD wBsn)
 	MessageBox(NULL, szbuf, szTitle, MB_OK | MB_ICONSTOP);
 }
 
-/* 自分の */
-BOOL changeSpeed(WORD wBsn, WORD wAxis, DOUBLE SS, DOUBLE Object, DOUBLE Rate)
+/* rate：加減速時間 [ms] */
+BOOL changeSpeed(WORD wBsn, WORD wAxis, DOUBLE ss, DOUBLE object, DOUBLE rate)
 {
-	return true;
+	/* 書き込むデータを計算 */
+	WORD range_data = (8192E3 / object > 8191) ? 8191 : 8192E3 / object;
+	DOUBLE Funit = 1000 / (DOUBLE)range_data;
+	WORD ss_data = ss / Funit;
+	WORD object_data = object / Funit;
+	WORD rate_data = rate * (4.096E3) / (DOUBLE)(object_data - ss_data);
+
+	/* データを書き込む */
+	if (FALSE == CTDwDataHalfWrite(
+					 wBsn, wAxis, CTD_RANGE_WRITE, range_data))
+		return FALSE;
+	if (FALSE == CTDwDataHalfWrite(
+					 wBsn, wAxis, CTD_START_STOP_SPEED_DATA_WRITE, ss_data))
+		return FALSE;
+	if (FALSE == CTDwDataHalfWrite(
+					 wBsn, wAxis, CTD_OBJECT_SPEED_DATA_WRITE, object_data))
+		return FALSE;
+	if (FALSE == CTDwDataHalfWrite(
+					 wBsn, wAxis, CTD_RATE1_DATA_WRITE, rate_data))
+		return FALSE;
+
+	return TRUE;
+}
+
+BOOL getBusy(WORD wBsn, WORD wAxis)
+{
+	BYTE driveStatus;
+	CTDwGetDriveStatus(wBsn, wAxis, &driveStatus);
+	return driveStatus & 1;
 }
