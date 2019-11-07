@@ -13,8 +13,8 @@ void Terminate(void);
 BOOL ChangeSpeed(WORD wBsn, WORD wAxis, DOUBLE ss, DOUBLE object, DOUBLE rate);
 BOOL GetBusy(WORD wBsn, WORD wAxis);
 unsigned int GetIntCnt(WORD wBsn, WORD wAxis);
-
-void PresetPulseDrive(WORD wBsn, WORD wAxis, short TargetCnt);
+void Drive(WORD wBsn, WORD wAxis, short TargetCnt);
+void PresetPulseDrive(WORD wBsn, WORD wAxis, short Pulse);
 
 BYTE g_Key[256];
 
@@ -31,7 +31,7 @@ int main(void)
 	{
 		/* パルス出力 */
 		static short TargetCnt;
-		PresetPulseDrive(0, CTD_AXIS_3, TargetCnt);
+		Drive(0, CTD_AXIS_3, TargetCnt);
 		printf("Target %+5d\n", TargetCnt);
 
 		/* キー入力 */
@@ -248,7 +248,7 @@ void Terminate(void)
 * 内部カウンタが TargetCnt になるようにモータを駆動する
 *
 -----------------------------------------------*/
-void PresetPulseDrive(WORD wBsn, WORD wAxis, short TargetCnt)
+void Drive(WORD wBsn, WORD wAxis, short TargetCnt)
 {
 	/* 内部カウンタ取得 */
 	unsigned int IntCnt = GetIntCnt(wBsn, wAxis);
@@ -258,8 +258,19 @@ void PresetPulseDrive(WORD wBsn, WORD wAxis, short TargetCnt)
 	printf("Diff %+5d\t", Diff);
 
 	/* パルスを出力 */
-	if (Diff > 0)
-		CTDwDataFullWrite(wBsn, wAxis, CTD_PLUS_PRESET_PULSE_DRIVE, abs(Diff));
-	else if (Diff < 0)
-		CTDwDataFullWrite(wBsn, wAxis, CTD_MINUS_PRESET_PULSE_DRIVE, abs(Diff));
+	PresetPulseDrive(wBsn, wAxis, Diff);
+}
+
+/*-----------------------------------------------
+*
+* 指定数のパルスを出力する
+*
+-----------------------------------------------*/
+void PresetPulseDrive(WORD wBsn, WORD wAxis, short Pulse)
+{
+	/* パルスを出力 */
+	if (Pulse > 0)
+		CTDwDataFullWrite(wBsn, wAxis, CTD_PLUS_PRESET_PULSE_DRIVE, abs(Pulse));
+	else if (Pulse < 0)
+		CTDwDataFullWrite(wBsn, wAxis, CTD_MINUS_PRESET_PULSE_DRIVE, abs(Pulse));
 }
