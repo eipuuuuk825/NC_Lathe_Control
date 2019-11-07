@@ -1,4 +1,4 @@
-
+ï»¿
 #ifdef __BORLANDC__ 
 	#define DWORD   DWORD
 	#define PDWORD  DWORD *
@@ -15,9 +15,9 @@
 	#endif
 #endif
 
-#define AXIS_POINT	4			/* Ž²” = 4Ž²	*/
-#define AXIS_PTN	1			//Žd—l[0]:1-4Ž² 
-#define AXIS_XY     2			//[0]:XŽ² [1]:YŽ²
+#define AXIS_POINT	4			/* è»¸æ•° = 4è»¸	*/
+#define AXIS_PTN	1			//ä»•æ§˜ï¼[0]:1-4è»¸ 
+#define AXIS_XY     2			//[0]:Xè»¸ [1]:Yè»¸
 #define AXIS_4		4
 
 //typedef struct {
@@ -31,65 +31,65 @@
 
 
 //typedef struct {
-//	unsigned short	wAxis;		// ‘ÎÛ§ŒäŽ²
-//	unsigned short	wPort;		// ‘ÎÛƒ|[ƒg”Ô†
+//	unsigned short	wAxis;		// å¯¾è±¡åˆ¶å¾¡è»¸
+//	unsigned short	wPort;		// å¯¾è±¡ãƒãƒ¼ãƒˆç•ªå·
 //	unsigned long	dwData;		// Read/Write Data
 //} CTD_IOPARAMS, *pCTD_IOPARAMS;
 //
 //// Drive parameter
 //typedef struct {
-//	DWORD	dwLowSpeed;						// Ž©‹N“®‘¬“x(PPS)
-//	DWORD	dwHiSpeed;						// Å‚‘¬“x(PPS)
-//	DWORD	dwRate;							// ‰ÁŒ¸‘¬ŽžŠÔ(msec)
-//	WORD	wSRate;							// ‚rŽš‰ÁŒ¸—¦(%)
+//	DWORD	dwLowSpeed;						// è‡ªèµ·å‹•é€Ÿåº¦(PPS)
+//	DWORD	dwHiSpeed;						// æœ€é«˜é€Ÿåº¦(PPS)
+//	DWORD	dwRate;							// åŠ æ¸›é€Ÿæ™‚é–“(msec)
+//	WORD	wSRate;							// ï¼³å­—åŠ æ¸›çŽ‡(%)
 //} CTDPARAMETER, *PCTDP;
 
 
 typedef struct{
-	DWORD	dwMode;			//‰ÁŒ¸‘¬ƒ‚[ƒh
-	DWORD	dwLowSpeed;		//ŠJŽn‘¬“x
-	DWORD	dwHighSpeed;	//–Ú•W‘¬“x
-	DWORD	dwUPTime;		//‰Á‘¬ŽžŠÔ
-	DWORD	dwDWTime;		//Œ¸‘¬ŽžŠÔ
-	DWORD	dwUPSRate;		//‰Á‘¬SŽš”ä—¦
-	DWORD	dwDWSRate;		//Œ¸‘¬SŽš”ä—¦
-	BYTE	bOverONOFF;		//‘¬“xƒI[ƒo[ƒ‰ƒCƒh”{”
+	DWORD	dwMode;			//åŠ æ¸›é€Ÿãƒ¢ãƒ¼ãƒ‰
+	DWORD	dwLowSpeed;		//é–‹å§‹é€Ÿåº¦
+	DWORD	dwHighSpeed;	//ç›®æ¨™é€Ÿåº¦
+	DWORD	dwUPTime;		//åŠ é€Ÿæ™‚é–“
+	DWORD	dwDWTime;		//æ¸›é€Ÿæ™‚é–“
+	DWORD	dwUPSRate;		//åŠ é€ŸSå­—æ¯”çŽ‡
+	DWORD	dwDWSRate;		//æ¸›é€ŸSå­—æ¯”çŽ‡
+	BYTE	bOverONOFF;		//é€Ÿåº¦ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰å€æ•°
     DWORD	dwUpPls;
     DWORD	dwDownPls;    
 } CTDSPDPARAMETER, *PCTDSPDPARAMETER;
 
 
 // Error code
-#define CTD_SUCCESS						0	// ˆÙó‚È‚µi³íI—¹j
-#define CTD_ERR_SYSTEM						1	// ƒVƒXƒeƒ€ƒGƒ‰[
-													// Windows ‚Ì GetLastError()
-													// ‚ðƒR[ƒ‹‚µ‚Ä‚­‚¾‚³‚¢
-#define CTD_ERR_NO_DEVICE					2	// Žg—p‰Â”\‚ÈƒfƒoƒCƒX‚ª‚ ‚è‚Ü‚¹‚ñ
-#define CTD_ERR_IN_USE						3	// Žw’è‚ÌƒfƒoƒCƒX‚ÍŽg—p’†‚Å‚·
-#define CTD_ERR_INVALID_BSN					4	// –³Œø‚È BSN ‚Å‚·
-#define CTD_ERR_INVALID_PORT				6	// •s³‚Èƒ|[ƒg‚ð—v‹‚µ‚½
-//#define CTD_ERR_PARAMETER					7	// ˆø”‚Ì’l‚ª–³Œø‚Å‚·
-#define CTD_ERR_PROC						8	// ŠÖ”‚ÌŽg—p•û–@‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·
-#define CTD_ERR_USER_HANDLER				9	// ƒ†[ƒUƒnƒ“ƒhƒ‰‚ªŽÀs’†‚Å‚·
-#define CTD_ERR_INVALID_AXIS				50	// –³Œø‚È§ŒäŽ²‚ð—v‹‚µ‚½
-#define	CTD_ERR_IP							20	// •âŠÔƒGƒ‰[
-#define CTD_ERR_AXIS_MOVE					102	// Ž²“®ì’†
+#define CTD_SUCCESS						0	// ç•°çŠ¶ãªã—ï¼ˆæ­£å¸¸çµ‚äº†ï¼‰
+#define CTD_ERR_SYSTEM						1	// ã‚·ã‚¹ãƒ†ãƒ ã‚¨ãƒ©ãƒ¼
+													// Windows ã® GetLastError()
+													// ã‚’ã‚³ãƒ¼ãƒ«ã—ã¦ãã ã•ã„
+#define CTD_ERR_NO_DEVICE					2	// ä½¿ç”¨å¯èƒ½ãªãƒ‡ãƒã‚¤ã‚¹ãŒã‚ã‚Šã¾ã›ã‚“
+#define CTD_ERR_IN_USE						3	// æŒ‡å®šã®ãƒ‡ãƒã‚¤ã‚¹ã¯ä½¿ç”¨ä¸­ã§ã™
+#define CTD_ERR_INVALID_BSN					4	// ç„¡åŠ¹ãª BSN ã§ã™
+#define CTD_ERR_INVALID_PORT				6	// ä¸æ­£ãªãƒãƒ¼ãƒˆã‚’è¦æ±‚ã—ãŸ
+//#define CTD_ERR_PARAMETER					7	// å¼•æ•°ã®å€¤ãŒç„¡åŠ¹ã§ã™
+#define CTD_ERR_PROC						8	// é–¢æ•°ã®ä½¿ç”¨æ–¹æ³•ãŒé–“é•ã£ã¦ã„ã¾ã™
+#define CTD_ERR_USER_HANDLER				9	// ãƒ¦ãƒ¼ã‚¶ãƒãƒ³ãƒ‰ãƒ©ãŒå®Ÿè¡Œä¸­ã§ã™
+#define CTD_ERR_INVALID_AXIS				50	// ç„¡åŠ¹ãªåˆ¶å¾¡è»¸ã‚’è¦æ±‚ã—ãŸ
+#define	CTD_ERR_IP							20	// è£œé–“ã‚¨ãƒ©ãƒ¼
+#define CTD_ERR_AXIS_MOVE					102	// è»¸å‹•ä½œä¸­
 
 #define CTD_MAX_SLOTS						16
 
-#define CTD_ERR_NOT_OPEN					0x1001	// –¢‰Šú‰»
-#define CTD_ERR_NOT_DEVICE					0x1002	// ƒfƒoƒCƒX‚ª‘¶Ý‚µ‚Ü‚¹‚ñ
-#define CTD_ERR_EXIST_OPEN					0x1003	// CTDCreate‚ÅŠù‚É‰Šú‰»‚µ‚Ä‚¢‚Ü‚·B
-#define CTD_INVALID_BSN						0x1010	// Žw’èBSN‚Ìƒ{[ƒh‚ª‘¶Ý‚µ‚Ü‚¹‚ñB
-#define CTD_INVALID_AXIS					0x1011	// –³Œø‚È§ŒäŽ²k‚ð—v‹
-#define CTD_INVALID_DATA					0x1012	// ƒf[ƒ^‚ªÝ’è”ÍˆÍŠOBƒf[ƒ^ƒGƒ‰[B
-#define CTD_ERR_MINUS_SET					0x1020	// ˆÊ’uŒˆ‚ßƒhƒ‰ƒCƒuŽÀs’†‚ÉCTDSpeedOverride‚Åƒ}ƒCƒiƒX’l‚Ì•ÏX‘¬“x‚ðÝ’è‚µ‚½B
-#define CTD_ERR_AXIS_STOP					0x1021	// ƒhƒ‰ƒCƒu’†‚É”­s‚·‚éŠÖ”‚ðƒhƒ‰ƒCƒu’âŽ~’†‚É”­s‚µ‚½B
-//#define CTD_ERR_AXIS_MOVE					0x1022	// Ž²“®ì’†B
-#define CTD_ERR_DRIVE_START					0x1023	// CTDDriveStart”­sŽž‚ÌƒGƒ‰[B
-#define CTD_ERR_DRIVE_KIND					0x1024	// ˜A‘±ƒhƒ‰ƒCƒu’†‚ÉCTDPulseOverride‚ð”­s‚µ‚½B
-#define CTD_ERR_PARAMETER					0x1025	// CTDParaCont ƒpƒ‰ƒ[ƒ^•ª—ÞAƒpƒ‰ƒ[ƒ^No.‚ª”ÍˆÍŠOB
-#define CTD_ERR_ORG							0x1030	// CTDORGSignalStart‚ð”­s‚µ‚Ä‚àƒ‚[ƒ^‚ª‰ñ“]‚µ‚È‚¢B
+#define CTD_ERR_NOT_OPEN					0x1001	// æœªåˆæœŸåŒ–
+#define CTD_ERR_NOT_DEVICE					0x1002	// ãƒ‡ãƒã‚¤ã‚¹ãŒå­˜åœ¨ã—ã¾ã›ã‚“
+#define CTD_ERR_EXIST_OPEN					0x1003	// CTDCreateã§æ—¢ã«åˆæœŸåŒ–ã—ã¦ã„ã¾ã™ã€‚
+#define CTD_INVALID_BSN						0x1010	// æŒ‡å®šBSNã®ãƒœãƒ¼ãƒ‰ãŒå­˜åœ¨ã—ã¾ã›ã‚“ã€‚
+#define CTD_INVALID_AXIS					0x1011	// ç„¡åŠ¹ãªåˆ¶å¾¡è»¸kã‚’è¦æ±‚
+#define CTD_INVALID_DATA					0x1012	// ãƒ‡ãƒ¼ã‚¿ãŒè¨­å®šç¯„å›²å¤–ã€‚ãƒ‡ãƒ¼ã‚¿ã‚¨ãƒ©ãƒ¼ã€‚
+#define CTD_ERR_MINUS_SET					0x1020	// ä½ç½®æ±ºã‚ãƒ‰ãƒ©ã‚¤ãƒ–å®Ÿè¡Œä¸­ã«CTDSpeedOverrideã§ãƒžã‚¤ãƒŠã‚¹å€¤ã®å¤‰æ›´é€Ÿåº¦ã‚’è¨­å®šã—ãŸã€‚
+#define CTD_ERR_AXIS_STOP					0x1021	// ãƒ‰ãƒ©ã‚¤ãƒ–ä¸­ã«ç™ºè¡Œã™ã‚‹é–¢æ•°ã‚’ãƒ‰ãƒ©ã‚¤ãƒ–åœæ­¢ä¸­ã«ç™ºè¡Œã—ãŸã€‚
+//#define CTD_ERR_AXIS_MOVE					0x1022	// è»¸å‹•ä½œä¸­ã€‚
+#define CTD_ERR_DRIVE_START					0x1023	// CTDDriveStartç™ºè¡Œæ™‚ã®ã‚¨ãƒ©ãƒ¼ã€‚
+#define CTD_ERR_DRIVE_KIND					0x1024	// é€£ç¶šãƒ‰ãƒ©ã‚¤ãƒ–ä¸­ã«CTDPulseOverrideã‚’ç™ºè¡Œã—ãŸã€‚
+#define CTD_ERR_PARAMETER					0x1025	// CTDParaCont ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿åˆ†é¡žã€ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿No.ãŒç¯„å›²å¤–ã€‚
+#define CTD_ERR_ORG							0x1030	// CTDORGSignalStartã‚’ç™ºè¡Œã—ã¦ã‚‚ãƒ¢ãƒ¼ã‚¿ãŒå›žè»¢ã—ãªã„ã€‚
 
 
 // Axis
@@ -198,7 +198,7 @@ typedef struct{
 
 
 //============================================
-//			‘¬“xŠÖ˜Aƒpƒ‰ƒ[ƒ^
+//			é€Ÿåº¦é–¢é€£ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 //============================================
 #define MAX_AXIS 			4
 #define CTD_CAUTION	2
@@ -208,7 +208,7 @@ typedef struct{
 #define	RATEDAT				(8.0 / 32768000.0)
 #define	CTD_STRAIGHT_MOVE		-1
 
-/* SpeedParameterRead‚ÅÝ’è‚³‚ê‚½ƒpƒ‰ƒ[ƒ^ */
+/* SpeedParameterReadã§è¨­å®šã•ã‚ŒãŸãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ */
 typedef struct{
 	double			dLoSpd[MAX_AXIS];
 	double			dHiSpd[MAX_AXIS];
@@ -218,33 +218,33 @@ typedef struct{
 } CTD_SPD_PARAM, *pCTD_SPD_PARAMS;
 
 //===========================================
-//				•âŠÔ‹@”\
+//				è£œé–“æ©Ÿèƒ½
 //===========================================
 typedef struct{
 
-	char   bIpAxis[AXIS_PTN][AXIS_4];		// •âŠÔŽ²‚ÌÝ’è AXIS_PTN=[0]:1-4Ž² 
-                                            // AXIS_4=[0]:1Ž²–Ú-[3]:4Ž²–Ú @
-											// “à—e:0=Ž©Ž² 1=XŽ² 2=YŽ² -1=o—Í‚È‚µ
-	unsigned char	bIpkind[AXIS_PTN];		// •âŠÔŽí—Þ	AXIS_PTN=[0]:1-4Ž² 
-	/* = 0:’¼ü•âŠÔ							*/
-	/* = 1:’¼ü•âŠÔ(Žü‘¬•â³‚ ‚è)			*/
-	/* = 2:‰E‰ñ‚è‰~ŒÊ•âŠÔ(Žü‘¬•â³‚È‚µ)		*/
-	/* = 3:¶‰ñ‚è‰~ŒÊ•âŠÔ(Žü‘¬•â³‚È‚µ)		*/
-	/* = 4:‰E‰ñ‚è‰~ŒÊ•âŠÔ(Žü‘¬•â³‚ ‚è)		*/
-	/* = 5:¶‰ñ‚è‰~ŒÊ•âŠÔ(Žü‘¬•â³‚ ‚è)		*/
+	char   bIpAxis[AXIS_PTN][AXIS_4];		// è£œé–“è»¸ã®è¨­å®š AXIS_PTN=[0]:1-4è»¸ 
+                                            // AXIS_4=[0]:1è»¸ç›®-[3]:4è»¸ç›® ã€€
+											// å†…å®¹:0=è‡ªè»¸ 1=Xè»¸ 2=Yè»¸ -1=å‡ºåŠ›ãªã—
+	unsigned char	bIpkind[AXIS_PTN];		// è£œé–“ç¨®é¡ž	AXIS_PTN=[0]:1-4è»¸ 
+	/* = 0:ç›´ç·šè£œé–“							*/
+	/* = 1:ç›´ç·šè£œé–“(å‘¨é€Ÿè£œæ­£ã‚ã‚Š)			*/
+	/* = 2:å³å›žã‚Šå††å¼§è£œé–“(å‘¨é€Ÿè£œæ­£ãªã—)		*/
+	/* = 3:å·¦å›žã‚Šå††å¼§è£œé–“(å‘¨é€Ÿè£œæ­£ãªã—)		*/
+	/* = 4:å³å›žã‚Šå††å¼§è£œé–“(å‘¨é€Ÿè£œæ­£ã‚ã‚Š)		*/
+	/* = 5:å·¦å›žã‚Šå††å¼§è£œé–“(å‘¨é€Ÿè£œæ­£ã‚ã‚Š)		*/
 
-	//*05.09.14 lLongData‚Ìˆø“n‚µíœ
+	//*05.09.14 lLongDataã®å¼•æ¸¡ã—å‰Šé™¤
 
-	unsigned char   bMovekind[AXIS_PTN];	         // 0=‘Š‘ÎˆÚ“®@1=â‘ÎˆÚ“®		    
-	long			lObjPoint[AXIS_PTN][AXIS_XY];	 // –Ú•WˆÊ’u AXIS_XY=[0]:XŽ² [1]:YŽ²
-	long			lCenterPoint[AXIS_PTN][AXIS_XY]; // ’†SˆÊ’u AXIS_XY=[0]:XŽ² [1]:YŽ²						
-	long			lN2Data1[AXIS_PTN];				 //	2,6Ž² N2ƒf[ƒ^
-	long			lN2Data2[AXIS_PTN];				 // 3,7Ž² N2ƒf[ƒ^
-	long			lN2Data3[AXIS_PTN];				 // 4,8Ž² N2ƒf[ƒ^			    
+	unsigned char   bMovekind[AXIS_PTN];	         // 0=ç›¸å¯¾ç§»å‹•ã€€1=çµ¶å¯¾ç§»å‹•		    
+	long			lObjPoint[AXIS_PTN][AXIS_XY];	 // ç›®æ¨™ä½ç½® AXIS_XY=[0]:Xè»¸ [1]:Yè»¸
+	long			lCenterPoint[AXIS_PTN][AXIS_XY]; // ä¸­å¿ƒä½ç½® AXIS_XY=[0]:Xè»¸ [1]:Yè»¸						
+	long			lN2Data1[AXIS_PTN];				 //	2,6è»¸ N2ãƒ‡ãƒ¼ã‚¿
+	long			lN2Data2[AXIS_PTN];				 // 3,7è»¸ N2ãƒ‡ãƒ¼ã‚¿
+	long			lN2Data3[AXIS_PTN];				 // 4,8è»¸ N2ãƒ‡ãƒ¼ã‚¿			    
 
-	unsigned char	bIpconsin[AXIS_PTN];		 	 // ˜A‘±:1 ’P”­:0
+	unsigned char	bIpconsin[AXIS_PTN];		 	 // é€£ç¶š:1 å˜ç™º:0
 	unsigned char   bEndkind[AXIS_PTN];		 		 // SlowDown:0,Emergency Stop:1
-	unsigned char   bDrawIn[AXIS_PTN];		 		 // ˆø‚«ž‚Ý§Œä 0=–³Œø 1=—LŒø
+	unsigned char   bDrawIn[AXIS_PTN];		 		 // å¼•ãè¾¼ã¿åˆ¶å¾¡ 0=ç„¡åŠ¹ 1=æœ‰åŠ¹
 
 }CTIpDriveParameter,*pCTID;
 

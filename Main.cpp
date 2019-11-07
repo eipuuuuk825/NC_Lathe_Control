@@ -4,105 +4,28 @@
 #include <stdio.h>
 #include "CTDw.h"
 
-const TCHAR szTitle[] = _T("Sample");
-
-static void ResultMessage(LPCTSTR lpszbuf);
-static void ErrorMessage(WORD wBsn);
 static BOOL CTD_InitAxis(WORD wBsn, WORD wAxis);
 
 /* 自分の */
+void Initialize(void);
+void Terminate(void);
 BOOL changeSpeed(WORD wBsn, WORD wAxis, DOUBLE ss, DOUBLE object, DOUBLE rate);
 BOOL getBusy(WORD wBsn, WORD wAxis);
 
 int main(void)
 {
-	TCHAR szBuf[1024];
-	BYTE bData[256];
-	WORD wBsn, wAxis;
-	BYTE b;
-	DWORD dwCount;
+	/* 初期化 */
+	Initialize();
 
-	//---------------------------------------------------------------
-	// CTD.Dll を開く
-	//---------------------------------------------------------------
-	if (FALSE == CTDwDllOpen())
-	{
-		wsprintf(szBuf, _T("DLL load error or driver open error"));
-		MessageBox(NULL, szBuf, szTitle, MB_OK | MB_ICONSTOP);
-		return 1; // DLLのロードまたはドライバのオープンに失敗しました
-	}
-	//---------------------------------------------------------------
-	// デバイスの使用を宣言する
-	//---------------------------------------------------------------
-	wBsn = 0;
-	if (-1 == CTDwCreate(wBsn))
-	{
-		wsprintf(szBuf, _T("Create error"));
-		MessageBox(NULL, szBuf, szTitle, MB_OK | MB_ICONSTOP);
-		return 1;
-	}
-	wsprintf(szBuf,
-			 _T("CTD Created\n")
-			 _T("BSN Number %d"),
-			 wBsn);
-	ResultMessage(szBuf);
-	//---------------------------------------------------------------
-	// 第１軸を選択
-	//---------------------------------------------------------------
-	wAxis = CTD_AXIS_1;
-	//---------------------------------------------------------------
-	// 制御軸の初期化
-	//---------------------------------------------------------------
-	if (FALSE == CTD_InitAxis(wBsn, wAxis))
-	{
-		ErrorMessage(wBsn);
-		return 1;
-	}
-	wsprintf(szBuf,
-			 _T("CTD\n")
-			 _T("制御軸 %d を初期化しました"),
-			 wAxis);
-	ResultMessage(szBuf);
-
-	/* 速度を変更 */
-	changeSpeed(wBsn, wAxis, 100, 10000, 10000);
-
-	//---------------------------------------------------------------
 	// リミットスイッチが押されるまで駆動
-	//---------------------------------------------------------------
-	if (FALSE == CTDwDataFullWrite(
-					 wBsn, wAxis, CTD_PLUS_SIGNAL_SEARCH1_DRIVE, 300))
-	{
-		ErrorMessage(wBsn);
-		return 1;
-	}
+	CTDwDataFullWrite(0, CTD_AXIS_3, CTD_PLUS_SIGNAL_SEARCH1_DRIVE, 300);
+	CTDwDataFullWrite(0, CTD_AXIS_4, CTD_PLUS_SIGNAL_SEARCH1_DRIVE, 300);
 
-	//---------------------------------------------------------------
-	// デバイスを解放する
-	//---------------------------------------------------------------
-	if (FALSE == CTDwClose(wBsn))
-	{
-		ErrorMessage(wBsn);
-		return 1;
-	}
-	wsprintf(szBuf,
-			 _T("CTD Close\n")
-			 _T("Bsn %d"),
-			 wBsn);
-	ResultMessage(szBuf);
-
-	//---------------------------------------------------------------
-	// CTD.Dll を閉じる
-	//---------------------------------------------------------------
-	if (FALSE == CTDwDllClose())
-	{
-		wsprintf(szBuf, _T("DLL Unload error"));
-		MessageBox(NULL, szBuf, szTitle, MB_OK | MB_ICONSTOP);
-		return 1; // DLLのアンロードに失敗しました
-	}
-
+	/* 終了処理 */
+	Terminate();
 	return 0;
 }
+
 //-------------------------------------------------------------------
 // 制御軸の初期化
 //-------------------------------------------------------------------
@@ -186,27 +109,6 @@ static BOOL CTD_InitAxis(WORD wBsn, WORD wAxis)
 
 	return TRUE;
 }
-//-------------------------------------------------------------------
-// 処理結果を表示
-//-------------------------------------------------------------------
-static void ResultMessage(LPCTSTR lpszbuf)
-{
-	MessageBox(NULL, lpszbuf, szTitle, MB_OK | MB_ICONINFORMATION);
-}
-//-------------------------------------------------------------------
-// エラーメッセージを表示
-//-------------------------------------------------------------------
-static void ErrorMessage(WORD wBsn)
-{
-	DWORD dwRes = CTDwGetLastError(wBsn);
-	TCHAR szbuf[50];
-
-	wsprintf(szbuf, _T("CTD error\n\n")
-					_T("Error code: %08lXh"),
-			 dwRes);
-
-	MessageBox(NULL, szbuf, szTitle, MB_OK | MB_ICONSTOP);
-}
 
 /* rate：加減速時間 [ms] */
 BOOL changeSpeed(WORD wBsn, WORD wAxis, DOUBLE ss, DOUBLE object, DOUBLE rate)
@@ -235,9 +137,51 @@ BOOL changeSpeed(WORD wBsn, WORD wAxis, DOUBLE ss, DOUBLE object, DOUBLE rate)
 	return TRUE;
 }
 
+/*-----------------------------------------------
+*
+* ビジーステータスを取得
+*
+-----------------------------------------------*/
 BOOL getBusy(WORD wBsn, WORD wAxis)
 {
 	BYTE driveStatus;
 	CTDwGetDriveStatus(wBsn, wAxis, &driveStatus);
 	return driveStatus & 1;
+}
+
+/*-----------------------------------------------
+*
+* 初期化
+*
+-----------------------------------------------*/
+void Initialize(void)
+{
+	/* キー入力があるまで停止 */
+	printf("press any key.\n");
+	while (!_kbhit());
+
+	/* CTD.Dll を開く */
+	CTDwDllOpen();
+
+	/* デバイスの使用を宣言する */
+	CTDwCreate(0);
+
+	/* 制御軸の初期化 */
+	CTD_InitAxis(0, CTD_AXIS_3);
+	CTD_InitAxis(0, CTD_AXIS_4);
+
+	/* 速度を変更 */
+	changeSpeed(0, CTD_AXIS_3, 100, 1000, 1000);
+	changeSpeed(0, CTD_AXIS_4, 100, 1000, 1000);
+}
+
+/*-----------------------------------------------
+*
+* 終了処理
+*
+-----------------------------------------------*/
+void Terminate(void)
+{
+	CTDwClose(0);   // デバイスを解放する
+	CTDwDllClose(); // CTD.Dll を閉じる
 }
