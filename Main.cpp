@@ -2,6 +2,7 @@
 #include <tchar.h>
 #include <conio.h> // kbhit
 #include <stdio.h>
+#include <stdlib.h>
 #include "CTDw.h"
 
 static BOOL CTD_InitAxis(WORD wBsn, WORD wAxis);
@@ -9,8 +10,13 @@ static BOOL CTD_InitAxis(WORD wBsn, WORD wAxis);
 /* 自分の */
 void Initialize(void);
 void Terminate(void);
-BOOL changeSpeed(WORD wBsn, WORD wAxis, DOUBLE ss, DOUBLE object, DOUBLE rate);
-BOOL getBusy(WORD wBsn, WORD wAxis);
+BOOL ChangeSpeed(WORD wBsn, WORD wAxis, DOUBLE ss, DOUBLE object, DOUBLE rate);
+BOOL GetBusy(WORD wBsn, WORD wAxis);
+unsigned int GetIntCnt(WORD wBsn, WORD wAxis);
+
+void PresetPulseDrive(WORD wBsn, WORD wAxis, short TargetCnt);
+
+BYTE g_Key[256];
 
 int main(void)
 {
@@ -18,8 +24,45 @@ int main(void)
 	Initialize();
 
 	// リミットスイッチが押されるまで駆動
-	CTDwDataFullWrite(0, CTD_AXIS_3, CTD_PLUS_SIGNAL_SEARCH1_DRIVE, 300);
-	CTDwDataFullWrite(0, CTD_AXIS_4, CTD_PLUS_SIGNAL_SEARCH1_DRIVE, 300);
+	// CTDwDataFullWrite(0, CTD_AXIS_3, CTD_PLUS_SIGNAL_SEARCH1_DRIVE, 0);
+	// CTDwDataFullWrite(0, CTD_AXIS_4, CTD_PLUS_SIGNAL_SEARCH1_DRIVE, 0);
+
+	while (1)
+	{
+		/* パルス出力 */
+		static short TargetCnt;
+		PresetPulseDrive(0, CTD_AXIS_3, TargetCnt);
+		printf("Target %+5d\n", TargetCnt);
+
+		/* キー入力 */
+		static bool f_u, f_d;
+		if (GetAsyncKeyState('U'))
+		{
+			if (f_u)
+			{
+				TargetCnt += 500;
+				f_u = false;
+			}
+		}
+		else
+		{
+			f_u = true;
+		}
+		if (GetAsyncKeyState('D'))
+		{
+			if (f_d)
+			{
+				TargetCnt -= 500;
+				f_d = false;
+			}
+		}
+		else
+		{
+			f_d = true;
+		}
+		if (GetAsyncKeyState('Q'))
+			break;
+	}
 
 	/* 終了処理 */
 	Terminate();
@@ -111,7 +154,7 @@ static BOOL CTD_InitAxis(WORD wBsn, WORD wAxis)
 }
 
 /* rate：加減速時間 [ms] */
-BOOL changeSpeed(WORD wBsn, WORD wAxis, DOUBLE ss, DOUBLE object, DOUBLE rate)
+BOOL ChangeSpeed(WORD wBsn, WORD wAxis, DOUBLE ss, DOUBLE object, DOUBLE rate)
 {
 	/* 書き込むデータを計算 */
 	WORD range_data = (8192E3 / object > 8191) ? 8191 : 8192E3 / object;
@@ -142,11 +185,24 @@ BOOL changeSpeed(WORD wBsn, WORD wAxis, DOUBLE ss, DOUBLE object, DOUBLE rate)
 * ビジーステータスを取得
 *
 -----------------------------------------------*/
-BOOL getBusy(WORD wBsn, WORD wAxis)
+BOOL GetBusy(WORD wBsn, WORD wAxis)
 {
 	BYTE driveStatus;
 	CTDwGetDriveStatus(wBsn, wAxis, &driveStatus);
 	return driveStatus & 1;
+}
+
+/*-----------------------------------------------
+*
+* 内部カウンタ取得
+*
+-----------------------------------------------*/
+unsigned int GetIntCnt(WORD wBsn, WORD wAxis)
+{
+	DWORD IntCnt;
+	CTDwDataFullRead(wBsn, wAxis, CTD_INTERNAL_COUNTER_READ, &IntCnt);
+	printf("IntCnt %5d\t", IntCnt);
+	return IntCnt;
 }
 
 /*-----------------------------------------------
@@ -158,7 +214,8 @@ void Initialize(void)
 {
 	/* キー入力があるまで停止 */
 	printf("press any key.\n");
-	while (!_kbhit());
+	while (!_kbhit())
+		;
 
 	/* CTD.Dll を開く */
 	CTDwDllOpen();
@@ -168,11 +225,11 @@ void Initialize(void)
 
 	/* 制御軸の初期化 */
 	CTD_InitAxis(0, CTD_AXIS_3);
-	CTD_InitAxis(0, CTD_AXIS_4);
+	// CTD_InitAxis(0, CTD_AXIS_4);
 
 	/* 速度を変更 */
-	changeSpeed(0, CTD_AXIS_3, 100, 1000, 1000);
-	changeSpeed(0, CTD_AXIS_4, 100, 1000, 1000);
+	ChangeSpeed(0, CTD_AXIS_3, 100, 1000, 1000);
+	// ChangeSpeed(0, CTD_AXIS_4, 100, 1000, 1000);
 }
 
 /*-----------------------------------------------
@@ -184,4 +241,25 @@ void Terminate(void)
 {
 	CTDwClose(0);   // デバイスを解放する
 	CTDwDllClose(); // CTD.Dll を閉じる
+}
+
+/*-----------------------------------------------
+*
+* 内部カウンタが TargetCnt になるようにモータを駆動する
+*
+-----------------------------------------------*/
+void PresetPulseDrive(WORD wBsn, WORD wAxis, short TargetCnt)
+{
+	/* 内部カウンタ取得 */
+	unsigned int IntCnt = GetIntCnt(wBsn, wAxis);
+
+	/* 偏差を計算 */
+	short Diff = TargetCnt - (short)IntCnt;
+	printf("Diff %+5d\t", Diff);
+
+	/* パルスを出力 */
+	if (Diff > 0)
+		CTDwDataFullWrite(wBsn, wAxis, CTD_PLUS_PRESET_PULSE_DRIVE, abs(Diff));
+	else if (Diff < 0)
+		CTDwDataFullWrite(wBsn, wAxis, CTD_MINUS_PRESET_PULSE_DRIVE, abs(Diff));
 }
