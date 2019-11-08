@@ -20,6 +20,10 @@ BYTE g_Key[256];
 
 int main(void)
 {
+	const size_t DataSize = 3;
+	short TargetData[DataSize] = {1000, -2000, 3000};
+	size_t Cnt = 0;
+
 	/* 初期化 */
 	Initialize();
 
@@ -27,39 +31,16 @@ int main(void)
 	// CTDwDataFullWrite(0, CTD_AXIS_3, CTD_PLUS_SIGNAL_SEARCH1_DRIVE, 0);
 	// CTDwDataFullWrite(0, CTD_AXIS_4, CTD_PLUS_SIGNAL_SEARCH1_DRIVE, 0);
 
-	while (1)
+	while (Cnt < DataSize)
 	{
 		/* パルス出力 */
-		static short TargetCnt;
-		Drive(0, CTD_AXIS_3, TargetCnt);
-		printf("Target %+5d\n", TargetCnt);
-
+		if (!GetBusy(0, CTD_AXIS_3))
+		{
+			printf("Target %+5d\t", TargetData[Cnt]);
+			Drive(0, CTD_AXIS_3, TargetData[Cnt]);
+			Cnt++;
+		}
 		/* キー入力 */
-		static bool f_u, f_d;
-		if (GetAsyncKeyState('U'))
-		{
-			if (f_u)
-			{
-				TargetCnt += 500;
-				f_u = false;
-			}
-		}
-		else
-		{
-			f_u = true;
-		}
-		if (GetAsyncKeyState('D'))
-		{
-			if (f_d)
-			{
-				TargetCnt -= 500;
-				f_d = false;
-			}
-		}
-		else
-		{
-			f_d = true;
-		}
 		if (GetAsyncKeyState('Q'))
 			break;
 	}
@@ -255,10 +236,10 @@ void Drive(WORD wBsn, WORD wAxis, short TargetCnt)
 
 	/* 偏差を計算 */
 	short Diff = TargetCnt - (short)IntCnt;
-	printf("Diff %+5d\t", Diff);
+	printf("Diff %+5d\n", Diff);
 
 	/* パルスを出力 */
-	PresetPulseDrive(wBsn, wAxis, Diff);
+	PresetPulseDrive(wBsn, wAxis, TargetCnt);
 }
 
 /*-----------------------------------------------
