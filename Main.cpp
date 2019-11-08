@@ -1,28 +1,31 @@
 ﻿#include <windows.h>
 #include <tchar.h>
 #include <conio.h> // kbhit
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
+#include <vector>
 #include "CTDw.h"
 
-static BOOL CTD_InitAxis(WORD wBsn, WORD wAxis);
-
-/* 自分の */
+/*-----------------------------------------------
+*
+* プロトタイプ宣言
+*
+-----------------------------------------------*/
 void Initialize(void);
+BOOL CTD_InitAxis(WORD wBsn, WORD wAxis);
 void Terminate(void);
 BOOL ChangeSpeed(WORD wBsn, WORD wAxis, DOUBLE ss, DOUBLE object, DOUBLE rate);
 BOOL GetBusy(WORD wBsn, WORD wAxis);
 unsigned int GetIntCnt(WORD wBsn, WORD wAxis);
 void Drive(WORD wBsn, WORD wAxis, short TargetCnt);
 void PresetPulseDrive(WORD wBsn, WORD wAxis, short Pulse);
-
-BYTE g_Key[256];
+void PrintError(const char *msg);
+std::vector<short> LoadTargetData(const char *path);
 
 int main(void)
 {
-	const size_t DataSize = 3;
-	short TargetData[DataSize] = {1000, -2000, 3000};
-	size_t Cnt = 0;
+	/* データを設定 */
+	std::vector<short> TargetData = LoadTargetData("");
 
 	/* 初期化 */
 	Initialize();
@@ -31,14 +34,16 @@ int main(void)
 	// CTDwDataFullWrite(0, CTD_AXIS_3, CTD_PLUS_SIGNAL_SEARCH1_DRIVE, 0);
 	// CTDwDataFullWrite(0, CTD_AXIS_4, CTD_PLUS_SIGNAL_SEARCH1_DRIVE, 0);
 
-	while (Cnt < DataSize)
+	ChangeSpeed(0, CTD_AXIS_3, 300, 301, 1);
+
+	while (!TargetData.empty())
 	{
 		/* パルス出力 */
 		if (!GetBusy(0, CTD_AXIS_3))
 		{
-			printf("Target %+5d\t", TargetData[Cnt]);
-			Drive(0, CTD_AXIS_3, TargetData[Cnt]);
-			Cnt++;
+			printf("Target %+5d\t", TargetData[0]);
+			Drive(0, CTD_AXIS_3, TargetData[0]);
+			TargetData.erase(TargetData.begin());
 		}
 		/* キー入力 */
 		if (GetAsyncKeyState('Q'))
@@ -57,7 +62,7 @@ int main(void)
 //				wAxis	制御軸
 //             	CTD_AXIS_1 ～ CTD_AXIS_4 を指定します
 //-------------------------------------------------------------------
-static BOOL CTD_InitAxis(WORD wBsn, WORD wAxis)
+BOOL CTD_InitAxis(WORD wBsn, WORD wAxis)
 {
 	//---------------------------------------------------------------
 	// MODE1 SET
@@ -134,9 +139,36 @@ static BOOL CTD_InitAxis(WORD wBsn, WORD wAxis)
 	return TRUE;
 }
 
-/* rate：加減速時間 [ms] */
+/*-----------------------------------------------
+*
+* 速度を変更
+* rate：加減速時間 [ms]
+*
+-----------------------------------------------*/
 BOOL ChangeSpeed(WORD wBsn, WORD wAxis, DOUBLE ss, DOUBLE object, DOUBLE rate)
 {
+	/* エラーチェック */
+	if (ss >= object)
+	{
+		char str[100];
+		snprintf(str, 100,
+				 "ChangeSpeed\n"
+				 "invalid speed (ss %lf, object %lf)",
+				 ss, object);
+		PrintError(str);
+		exit(EXIT_FAILURE);
+	}
+	if (rate <= 0)
+	{
+		char str[100];
+		snprintf(str, 100,
+				 "ChangeSpeed\n"
+				 "invalid rate (%lf)",
+				 rate);
+		PrintError(str);
+		exit(EXIT_FAILURE);
+	}
+
 	/* 書き込むデータを計算 */
 	WORD range_data = (8192E3 / object > 8191) ? 8191 : 8192E3 / object;
 	DOUBLE Funit = 1000 / (DOUBLE)range_data;
@@ -239,7 +271,7 @@ void Drive(WORD wBsn, WORD wAxis, short TargetCnt)
 	printf("Diff %+5d\n", Diff);
 
 	/* パルスを出力 */
-	PresetPulseDrive(wBsn, wAxis, TargetCnt);
+	PresetPulseDrive(wBsn, wAxis, Diff);
 }
 
 /*-----------------------------------------------
@@ -254,4 +286,29 @@ void PresetPulseDrive(WORD wBsn, WORD wAxis, short Pulse)
 		CTDwDataFullWrite(wBsn, wAxis, CTD_PLUS_PRESET_PULSE_DRIVE, abs(Pulse));
 	else if (Pulse < 0)
 		CTDwDataFullWrite(wBsn, wAxis, CTD_MINUS_PRESET_PULSE_DRIVE, abs(Pulse));
+}
+
+/*-----------------------------------------------
+*
+* エラーメッセージ
+*
+-----------------------------------------------*/
+void PrintError(const char *msg)
+{
+	MessageBox(NULL, _T(msg), _T("Error"), MB_OK | MB_ICONSTOP);
+}
+
+/*-----------------------------------------------
+*
+* 目標値データを読み込む
+*
+-----------------------------------------------*/
+std::vector<short> LoadTargetData(const char *path)
+{
+	std::vector<short> TargetData;
+	for (size_t i = 0; i < 1000 / 10; i++)
+		TargetData.emplace_back((i + 1) * 10);
+	for (size_t i = 0; i < TargetData.size(); i++)
+		printf("%d\n", TargetData[i]);
+	return TargetData;
 }
