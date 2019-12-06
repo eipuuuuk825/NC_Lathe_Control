@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "CTDw.h"
+#include "../inc/CTDw.h"
 
 HINSTANCE hDLL;
 unsigned short BackIO;

@@ -4,7 +4,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <vector>
-#include "CTDw.h"
+#include "../inc/CTDw.h"
 
 /*-----------------------------------------------
 *
