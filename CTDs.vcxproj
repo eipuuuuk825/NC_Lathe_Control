@@ -13,10 +13,14 @@
   <ItemGroup>
     <ClCompile Include="src\CTDw.cpp" />
     <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\Motor.cpp" />
+    <ClCompile Include="src\Standard.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\CTD.h" />
     <ClInclude Include="inc\CTDw.h" />
+    <ClInclude Include="inc\Motor.hpp" />
+    <ClInclude Include="inc\Standard.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1869DFDA-B17A-4557-820A-9859088BC646}</ProjectGuid>

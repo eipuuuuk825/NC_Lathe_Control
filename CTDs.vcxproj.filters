@@ -15,12 +15,24 @@
     <ClCompile Include="src\Main.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\Motor.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Standard.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\CTD.h">
       <Filter>inc</Filter>
     </ClInclude>
     <ClInclude Include="inc\CTDw.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Motor.hpp">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Standard.hpp">
       <Filter>inc</Filter>
     </ClInclude>
   </ItemGroup>
