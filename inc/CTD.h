@@ -1,4 +1,5 @@
-﻿
+﻿#pragma once
+
 #ifdef __BORLANDC__ 
 	#define DWORD   DWORD
 	#define PDWORD  DWORD *

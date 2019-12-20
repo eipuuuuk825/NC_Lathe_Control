@@ -12,33 +12,55 @@ typedef enum
     MINUS,
 } DIRECTION;
 
-class SPEED
+class Speed
 {
 public:
-    double m_SS, m_Object, m_Rate;
-    SPEED(void);
-    SPEED(double SS, double Object, double Rate)
+    double m_ss, m_object, m_rate;
+    Speed(void)
     {
-        m_SS = SS;
-        m_Object = Object;
-        m_Rate = Rate;
+        m_ss = 0;
+        m_object = 0;
+        m_rate = 0;
+    }
+    Speed(double ss, double object, double rate)
+    {
+        m_ss = ss;
+        m_object = object;
+        m_rate = rate;
+    }
+    inline bool operator==(const Speed &rhs) const
+    {
+        bool _1 = (m_ss == rhs.m_ss);
+        bool _2 = (m_object == rhs.m_object);
+        bool _3 = (m_rate == rhs.m_rate);
+        return (_1 & _2 & _3);
+    }
+    inline bool operator!=(const Speed &rhs) const
+    {
+        return !(*this == rhs);
     }
 };
 
-class MOTOR
+class Motor
 {
 public:
-    MOTOR(uint16_t Bsn, size_t MaxAxisNum);
-    ~MOTOR(void);
-    void ChangeSpeed(uint16_t Axis, SPEED Speed);
-    bool GetBusy(uint16_t Axis);
-    int32_t GetIntCnt(uint16_t Axis);
-    void SetIntCnt(uint16_t Axis, int32_t IntCnt);
-    void DriveLimitSwitch(uint16_t Axis, DIRECTION Direction);
-    void DriveIntCnt(uint16_t Axis, int32_t TargetCnt);
+    void change_speed(uint16_t axis, Speed speed);
+    void drive_limit_switch(uint16_t axis, DIRECTION direction);
+    void drive_int_cnt(uint16_t axis, int32_t target_cnt);
+    void slow_down_stop(uint16_t axis);
+
+public:
+    Motor(uint16_t bsn, size_t max_axis_num);
+    ~Motor(void);
+    bool get_busy(uint16_t axis);
+    int32_t get_int_cnt(uint16_t axis);
+    void set_int_cnt(uint16_t axis, int32_t int_cnt);
 
 private:
-    uint16_t m_Bsn;
-    void InitAxis(uint16_t Axis);
-    void PresetPulseDrive(uint16_t Axis, int64_t Pulse);
+    uint16_t m_bsn;
+    void init_axis(uint16_t axis);
+    void preset_pulse_drive(uint16_t axis, int64_t pulse);
+
+private:
+    Speed m_pre_speed;
 };

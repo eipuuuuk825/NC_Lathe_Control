@@ -11,16 +11,22 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\CTDw.cpp" />
-    <ClCompile Include="src\Main.cpp" />
-    <ClCompile Include="src\Motor.cpp" />
-    <ClCompile Include="src\Standard.cpp" />
+    <Text Include="Gcode_sample.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\CTDw.cpp" />
+    <ClCompile Include="src\g_code.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\motor.cpp" />
+    <ClCompile Include="src\standard.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="inc\config.hpp" />
     <ClInclude Include="inc\CTD.h" />
     <ClInclude Include="inc\CTDw.h" />
-    <ClInclude Include="inc\Motor.hpp" />
-    <ClInclude Include="inc\Standard.hpp" />
+    <ClInclude Include="inc\g_code.hpp" />
+    <ClInclude Include="inc\motor.hpp" />
+    <ClInclude Include="inc\standard.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1869DFDA-B17A-4557-820A-9859088BC646}</ProjectGuid>

@@ -2,5 +2,10 @@
 
 #include <windows.h>
 #include <tchar.h>
+#include <vector>
+#include <string>
+#include <sstream>
+#include <cstdlib>
 
-void PrintError(const char *msg);
+void print_err(const char *msg);
+std::vector<std::string> split(const std::string &str, char sep);

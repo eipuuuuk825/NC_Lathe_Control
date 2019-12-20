@@ -9,16 +9,22 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <Text Include="Gcode_sample.txt" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="src\CTDw.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\Main.cpp">
+    <ClCompile Include="src\g_code.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\Motor.cpp">
+    <ClCompile Include="src\main.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\Standard.cpp">
+    <ClCompile Include="src\motor.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\standard.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -29,10 +35,16 @@
     <ClInclude Include="inc\CTDw.h">
       <Filter>inc</Filter>
     </ClInclude>
-    <ClInclude Include="inc\Motor.hpp">
+    <ClInclude Include="inc\motor.hpp">
       <Filter>inc</Filter>
     </ClInclude>
-    <ClInclude Include="inc\Standard.hpp">
+    <ClInclude Include="inc\standard.hpp">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\g_code.hpp">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\config.hpp">
       <Filter>inc</Filter>
     </ClInclude>
   </ItemGroup>

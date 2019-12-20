@@ -1,66 +1,77 @@
 ﻿#include <cstdio>
 #include <vector>
-#include "../inc/Motor.hpp"
+#include <fstream>
+#include "../inc/motor.hpp"
+#include "../inc/g_code.hpp"
 
-std::vector<short> LoadTargetData(const char *path);
+extern std::vector<Queue> g_q;
+Motor g_motor(0, 4);
 
-const uint16_t Bsn = 0;
-const size_t MaxAxisNum = 4; /* 軸の最大個数 */
+void wait_busy(void)
+{
+	while (g_motor.get_busy(AXIS_X) | g_motor.get_busy(AXIS_Z))
+	{
+		if (GetAsyncKeyState('Q'))
+		{
+			printf("*** slow down stop ***\n");
+			g_motor.slow_down_stop(AXIS_X);
+			g_motor.slow_down_stop(AXIS_Z);
+			exit(EXIT_SUCCESS);
+		}
+	}
+}
 
 int main(void)
 {
 	/*-----------------------------------------------
-	内部カウンタ目標値を読み込む
+	*
+	* G コードを解析
+	*
 	-----------------------------------------------*/
-	// std::vector<short> TargetData = LoadTargetData("");
-	std::vector<int32_t> TargetData{500, -1000, 1000, 2000};
+	analyze_gcode("Gcode_sample.txt");
+	print_q();
 
 	/*-----------------------------------------------
-	初期化
+	*
+	* コントローラボード準備
+	*
 	-----------------------------------------------*/
-	MOTOR Motor(Bsn, MaxAxisNum);
-	Motor.ChangeSpeed(CTD_AXIS_3, SPEED(300, 1000, 100));
+	/* 初期化 */
+	g_motor.change_speed(AXIS_Z, Speed(300, 1000, 100));
+	/* 原点合わせ */
+	g_motor.drive_limit_switch(AXIS_Z, MINUS);
+	wait_busy();
+
+	g_motor.set_int_cnt(AXIS_X, 0);
+	g_motor.set_int_cnt(AXIS_Z, 0);
 
 	/*-----------------------------------------------
-	リミットスイッチが押されるまで駆動
+	*
+	* キューの処理を実行
+	*	
 	-----------------------------------------------*/
-	Motor.DriveLimitSwitch(CTD_AXIS_3, PLUS);
-	while (Motor.GetBusy(CTD_AXIS_3))
-		;
-	Motor.SetIntCnt(CTD_AXIS_3, 0);
-
-	/*-----------------------------------------------
-	内部カウンタ目標値に合わせてパルスを出力
-	-----------------------------------------------*/
-	while (!TargetData.empty())
+	for (size_t i = 0; i < g_q.size(); i++)
 	{
-		/* パルス出力 */
-		if (!Motor.GetBusy(CTD_AXIS_3))
+		switch (g_q[i].m_mode)
 		{
-			printf("Target %+5d\tCurrent %+5d\n",
-				   TargetData[0], Motor.GetIntCnt(CTD_AXIS_3));
-			Motor.DriveIntCnt(CTD_AXIS_3, TargetData[0]);
-			TargetData.erase(TargetData.begin());
-		}
-		/* キー入力 */
-		if (GetAsyncKeyState('Q'))
+		/* ステッピングモータ速度変更 */
+		case MODE_CHANGE_SPEED_SPTEPPING_MOTOR:
+			g_motor.change_speed(AXIS_X, g_q[i].m_speed);
+			g_motor.change_speed(AXIS_Z, g_q[i].m_speed);
+			printf("%4d/%4d\tspeed %.0lf\n", i + 1, g_q.size(), g_q[i].m_speed.m_object);
+			wait_busy();
 			break;
+		/* ステッピングモータ駆動 */
+		case MODE_DRIVE_STEPPING_MOTOR:
+			g_motor.drive_int_cnt(AXIS_X, MM_PULSE_X(g_q[i].m_pos.m_x));
+			g_motor.drive_int_cnt(AXIS_Z, MM_PULSE_Z(g_q[i].m_pos.m_z));
+			printf("%4d/%4d\tpos (%.2lf, %.2lf)\n",
+				   i + 1, g_q.size(),
+				   g_q[i].m_pos.m_x, g_q[i].m_pos.m_z);
+			wait_busy();
+			break;
+		}
 	}
 
 	return 0;
-}
-
-/*-----------------------------------------------
-*
-* 目標値データを読み込む
-*
------------------------------------------------*/
-std::vector<short> LoadTargetData(const char *path)
-{
-	std::vector<short> TargetData;
-	for (size_t i = 0; i < 1000 / 10; i++)
-		TargetData.emplace_back((i + 1) * -10);
-	for (size_t i = 0; i < TargetData.size(); i++)
-		printf("%d\n", TargetData[i]);
-	return TargetData;
 }
