@@ -47,10 +47,10 @@ std::string read_file(const char *file_path)
 std::vector<std::string> split_tag(std::string str_raw)
 {
     std::vector<std::string> str_splited; /* タグ毎に分けた後の文字列ベクタ */
+    std::string str_buf;
+
     for (size_t i = 0; i < str_raw.size(); i++)
     {
-        static std::string str_buf;
-
         /* タグだったらその時点での str_buf を str_splited に追加 */
         if (is_tag(str_raw[i]))
         {
@@ -67,6 +67,11 @@ std::vector<std::string> split_tag(std::string str_raw)
             str_buf.push_back(str_raw[i]);
         }
     }
+
+    /* 最後のタグを追加 */
+    if (is_tag(str_buf[0]))
+        str_splited.emplace_back(str_buf);
+
     return str_splited;
 }
 
@@ -119,27 +124,53 @@ void analyze_G(std::string str)
         print_err(sstr.str().c_str());
     }
 
-    /*-----------------------------------------------
-    G00 か G01 かを判断（速度）
-    -----------------------------------------------*/
+    /* G00 か G01 かを判断（速度） */
+    analyze_G_speed(str);
+
+    /* X, Z（目標位置） */
+    analyze_G_pos(str);
+}
+
+/*-----------------------------------------------
+G の速度
+-----------------------------------------------*/
+void analyze_G_speed(std::string str)
+{
     static Speed pre_speed;
     Speed target_speed;
     int number = std::stoi(str.substr(1, 2));
-    target_speed = (number == 0) ? g_fast_forward : g_interpolation_speed;
+
+    /* 速度を設定 */
+    switch (number)
+    {
+    case 0:
+        target_speed = g_fast_forward;
+        break;
+    case 1:
+        target_speed = g_interpolation_speed;
+        break;
+    default:
+        std::stringstream sstr;
+        sstr << __FUNCSIG__ << "\n\nsyntax err : " << str << std::endl;
+        print_err(sstr.str().c_str());
+    }
 
     /* キューに追加 */
     if (target_speed != pre_speed)
     {
-        Queue tmp1(MODE_CHANGE_SPEED_SPTEPPING_MOTOR, target_speed);
-        g_q.emplace_back(tmp1);
+        Queue tmp(MODE_CHANGE_SPEED_SPTEPPING_MOTOR, target_speed);
+        g_q.emplace_back(tmp);
     }
 
     /* 更新 */
     pre_speed = target_speed;
+}
 
-    /*-----------------------------------------------
-    X, Z（目標位置）
-    -----------------------------------------------*/
+/*-----------------------------------------------
+G の位置
+-----------------------------------------------*/
+void analyze_G_pos(std::string str)
+{
     Pos target_pos;
     for (size_t i = 0; i < 2; i++)
     {
@@ -174,8 +205,8 @@ void analyze_G(std::string str)
     }
 
     /* キューに追加 */
-    Queue tmp2(MODE_DRIVE_STEPPING_MOTOR, target_pos);
-    g_q.emplace_back(tmp2);
+    Queue tmp(MODE_DRIVE_STEPPING_MOTOR, target_pos);
+    g_q.emplace_back(tmp);
 }
 
 void analyze_M(std::string str)
@@ -189,22 +220,56 @@ void analyze_M(std::string str)
     }
 
     /* M コードの番号を判断 */
-    // int number = std::stoi(str.substr(1, 2));
-    // switch (number)
-    // {
-    //     case
-    // }
+    int number = std::stoi(str.substr(1, 2));
+
+    /* M コードの種類に応じた処理 */
+    Queue tmp;
+    switch (number)
+    {
+    case 3:
+        tmp.m_mode = MODE_DRIVE_SERVO;
+        break;
+    case 5:
+        tmp.m_mode = MODE_STOP_SERVO;
+        break;
+    case 2:
+    case 30:
+        break;
+    default:
+        std::stringstream sstr;
+        sstr << __FUNCSIG__ << "\n\nsyntax err : " << str << std::endl;
+        print_err(sstr.str().c_str());
+    }
+    g_q.emplace_back(tmp);
 }
 
 void analyze_S(std::string str)
 {
-    /* エラーチェック */
+    /* エラーチェック１ */
+    static size_t call_cnt;
+    ++call_cnt;
+    if (call_cnt > 1)
+    {
+        std::stringstream sstr;
+        sstr << __FUNCSIG__ << "\n\nDon't change speed twice.\n"
+             << str << std::endl;
+        print_err(sstr.str().c_str());
+    }
+
+    /* エラーチェック２ */
     if (str.size() <= 1)
     {
         std::stringstream sstr;
         sstr << __FUNCSIG__ << "\n\nsyntax err : " << str << std::endl;
         print_err(sstr.str().c_str());
     }
+
+    /* 回転数を取得 */
+    int rpm = std::stoi(str.substr(1, str.size() - 1));
+
+    /* キューに追加 */
+    Queue tmp(MODE_CHANGE_SPEED_SERVO, Speed(100, rpm, 2000));
+    g_q.emplace_back(tmp);
 }
 
 void analyze_F(std::string str)
@@ -268,15 +333,27 @@ void print_q(void)
         switch (g_q[i].m_mode)
         {
         case MODE_CHANGE_SPEED_SPTEPPING_MOTOR:
-            printf("change speed stepping motor\t%.2lf\t%.2lf\t%.2lf\n",
+            printf("change stepping motor speed\t%.2lf  %.2lf  %.2lf\n",
                    g_q[i].m_speed.m_object,
                    g_q[i].m_speed.m_ss,
                    g_q[i].m_speed.m_rate);
             break;
         case MODE_DRIVE_STEPPING_MOTOR:
-            printf("drive stepping motor\t%.2lf\t%.2lf\n",
+            printf("drive stepping motor\t\t%.2lf\t%.2lf\n",
                    g_q[i].m_pos.m_x,
                    g_q[i].m_pos.m_z);
+            break;
+        case MODE_DRIVE_SERVO:
+            printf("drive servo\n");
+            break;
+        case MODE_STOP_SERVO:
+            printf("stop servo\n");
+            break;
+        case MODE_CHANGE_SPEED_SERVO:
+            printf("change servo speed\t\t%.2lf  %.2lf  %.2lf\n",
+                   g_q[i].m_speed.m_object,
+                   g_q[i].m_speed.m_ss,
+                   g_q[i].m_speed.m_rate);
             break;
         }
     }

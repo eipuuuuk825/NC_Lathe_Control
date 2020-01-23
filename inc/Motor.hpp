@@ -9,8 +9,8 @@
 typedef enum
 {
     PLUS,
-    MINUS,
-} DIRECTION;
+    MINUS
+} Direction;
 
 class Speed
 {
@@ -45,8 +45,9 @@ class Motor
 {
 public:
     void change_speed(uint16_t axis, Speed speed);
-    void drive_limit_switch(uint16_t axis, DIRECTION direction);
+    void drive_limit_switch(uint16_t axis, Direction direction);
     void drive_int_cnt(uint16_t axis, int32_t target_cnt);
+    void drive_main_axis(uint16_t axis);
     void slow_down_stop(uint16_t axis);
 
 public:
@@ -55,6 +56,7 @@ public:
     bool get_busy(uint16_t axis);
     int32_t get_int_cnt(uint16_t axis);
     void set_int_cnt(uint16_t axis, int32_t int_cnt);
+    size_t m_max_axis_num;
 
 private:
     uint16_t m_bsn;

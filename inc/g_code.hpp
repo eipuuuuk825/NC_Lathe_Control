@@ -25,6 +25,8 @@ double find_previous_pos(size_t index, char X_or_Z);
 -----------------------------------------------*/
 typedef void (*FuncPointer)(std::string str);
 void analyze_G(std::string str);
+void analyze_G_speed(std::string str);
+void analyze_G_pos(std::string str);
 void analyze_M(std::string str);
 void analyze_S(std::string str);
 void analyze_F(std::string str);
@@ -50,8 +52,10 @@ const std::vector<Tag> g_tag{
 typedef enum
 {
     MODE_CHANGE_SPEED_SPTEPPING_MOTOR, /* ステッピングモータ速度変更 */
-    MODE_CHANGE_SPEED_SERVO,           /* サーボモータ速度変更 */
     MODE_DRIVE_STEPPING_MOTOR,         /* ステッピングモータ駆動 */
+    MODE_CHANGE_SPEED_SERVO,           /* サーボモータ速度変更 */
+    MODE_DRIVE_SERVO,                  /* サーボモータ駆動 */
+    MODE_STOP_SERVO,                   /* サーボモータ停止 */
 } QueueMode;
 
 class Pos
@@ -85,6 +89,7 @@ public:
         m_mode = mode;
         m_pos = target_pos;
     }
+    Queue(void) {}
 
 public:
     QueueMode m_mode; /* キューのモード */

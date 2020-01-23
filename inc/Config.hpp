@@ -4,7 +4,7 @@
 #include "CTD.h"
 #include "motor.hpp"
 
-const Speed g_fast_forward(300, 1000, 100);
+const Speed g_fast_forward(300, 500, 100);
 
 #define AXIS_MAIN CTD_AXIS_1
 #define AXIS_X CTD_AXIS_4

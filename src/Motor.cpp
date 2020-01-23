@@ -8,7 +8,10 @@
 -----------------------------------------------*/
 Motor::Motor(uint16_t bsn, size_t max_axis_num)
 {
-	m_bsn = bsn;	   /* メンバの設定 */
+	/* メンバの設定 */
+	m_bsn = bsn;
+	m_max_axis_num = max_axis_num;
+
 	CTDwDllOpen();	 /* CTD.Dll を開く */
 	CTDwCreate(m_bsn); /* デバイスの使用を宣言する */
 
@@ -38,17 +41,17 @@ Motor::~Motor(void)
 void Motor::init_axis(uint16_t axis)
 {
 	// MODE1 SET
-	CTDwMode1Write(m_bsn, axis, 0b01001001);
+	CTDwMode1Write(m_bsn, axis, 0x40);
 	// MODE2 SET
 	CTDwMode2Write(m_bsn, axis, 0x3F);
 	// モード設定
 	CTDwCommandWrite(m_bsn, axis, CTD_INPOSITION_WAIT_MODE_RESET);
 	CTDwCommandWrite(m_bsn, axis, CTD_ALARM_STOP_ENABLE_MODE_SET);
 	// データ設定
-	CTDwDataHalfWrite(m_bsn, axis, CTD_RANGE_WRITE, 8191);
-	CTDwDataHalfWrite(m_bsn, axis, CTD_START_STOP_SPEED_DATA_WRITE, 819);
+	CTDwDataHalfWrite(m_bsn, axis, CTD_RANGE_WRITE, 819);
+	CTDwDataHalfWrite(m_bsn, axis, CTD_START_STOP_SPEED_DATA_WRITE, 81);
 	CTDwDataHalfWrite(m_bsn, axis, CTD_OBJECT_SPEED_DATA_WRITE, 8191);
-	CTDwDataHalfWrite(m_bsn, axis, CTD_RATE1_DATA_WRITE, 55);
+	CTDwDataHalfWrite(m_bsn, axis, CTD_RATE1_DATA_WRITE, 50);
 	// アドレス設定
 	CTDwDataFullWrite(m_bsn, axis, CTD_INTERNAL_COUNTER_WRITE, 0);
 	CTDwDataFullWrite(m_bsn, axis, CTD_EXTERNAL_COUNTER_WRITE, 0);
@@ -149,7 +152,7 @@ void Motor::preset_pulse_drive(uint16_t axis, int64_t pulse)
 * リミットスイッチが押されるまで駆動する
 *
 -----------------------------------------------*/
-void Motor::drive_limit_switch(uint16_t axis, DIRECTION direction)
+void Motor::drive_limit_switch(uint16_t axis, Direction direction)
 {
 	if (direction == PLUS)
 		CTDwDataFullWrite(m_bsn, axis, CTD_PLUS_SIGNAL_SEARCH1_DRIVE, 0);
@@ -167,6 +170,20 @@ void Motor::drive_int_cnt(uint16_t axis, int32_t target_cnt)
 	int32_t int_cnt = get_int_cnt(axis); /* 内部カウンタ取得 */
 	int64_t diff = target_cnt - int_cnt; /* 偏差を計算 */
 	preset_pulse_drive(axis, diff);		 /* パルスを出力 */
+}
+
+/*-----------------------------------------------
+*
+* 主軸を回転させる
+*
+-----------------------------------------------*/
+void Motor::drive_main_axis(uint16_t axis)
+{
+	/* サーボオン入力，瞬時停止入力 */
+	CTDwUniversalSignalWrite(0, axis, 0b00000011);
+
+	/* 連続ドライブモード */
+	CTDwDataFullWrite(m_bsn, axis, CTD_PLUS_CONTINUOUS_DRIVE, 0);
 }
 
 /*-----------------------------------------------
